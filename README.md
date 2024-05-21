@@ -71,6 +71,7 @@ python s3ListAllObjectsForABucketV2.py <bucket-name> <region> <Timestamp flag>
 
 
 Example: 
+The following is the command to retrieve the bucket inventory from the bucket name "centr-target-bucket-half-tb", region "ap-southeast-2" which is for Sydney, and the timestamp flag with "false".
 ```
 xfukaya@kfukaya:~/projects/python/s3pythonsamples$ python3 s3ListAllObjectsForABucketV2.py centr-target-bucket-half-tb ap-southeast-2 false 
 Bucket name: centr-target-bucket-half-tb 
@@ -87,3 +88,4 @@ Total Size: 1.2026 TB
 Total Size: 1322313289518 bytes 
 xfukaya@kfukaya:~/projects/python/centr_samples$ 
 ```
+(Note) The timestamp flag is to be used from you need to get all timestamp of each objects.
