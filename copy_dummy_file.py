@@ -20,7 +20,9 @@ def multiply_object(bucket_name, original_key):
                     aws_secret_access_key=aws_secret_access_key)
   # num_of_files = 10
   # new_file.txt file size is 512MB (0.5 GB)
-  num_of_files = 2 * 1024 * 350 # 0.5 x 2 (1G) x 1024 (1T) x 350 T
+  # num_of_files = 1024 # 512 GB
+  num_of_files = 2048 # 1TB
+  # num_of_files = 2 * 1024 * 350 # 0.5 x 2 (1G) x 1024 (1T) x 350 T
   # num_of_files = 5 # test
 
   # copy source
@@ -30,8 +32,10 @@ def multiply_object(bucket_name, original_key):
   }
     
   for x in range(num_of_files):
+  # for x in range(24):
     # new key name is created based on the numbering
-    new_key = f"dummy_file_{x}.txt"
+    # new_key = f"half-tb/dummy_file_new_{x}.txt"
+    new_key = f"1tb/dummy_file_new_{x}.txt"
     try:
         
         s3.copy_object(CopySource=copy_source, Bucket=bucket_name, Key=new_key)
