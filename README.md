@@ -88,4 +88,4 @@ Total Size: 1.2026 TB
 Total Size: 1322313289518 bytes 
 xfukaya@kfukaya:~/projects/python/centr_samples$ 
 ```
-(Note) The timestamp flag is to be used from you need to get all timestamp of each objects.
+(Note) The timestamp flag is to be used when you need to get all timestamp of each objects.
