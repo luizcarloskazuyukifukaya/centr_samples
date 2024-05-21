@@ -29,7 +29,7 @@ s3api =
     endpoint_url = https://s3.ap-southeast-2.wasabisys.com 
 ```
 
-(Note) The home directory path (.ex. '~' for Linux) is different depending on the type of Operating System used. 
+(Note) The home directory path (.ex. '~' for Linux) is different depending on the type of Operating System used. Also, be aware that you need to create a subfolder named ".aws", and then create the concerned file inside. You can use the template "config" that comes with this git repository.
 
 ## Credentials 
 
@@ -43,7 +43,7 @@ aws_access_key_id = YOUR_ACCESS_KEY_ID
 aws_secret_access_key = YOUR_SECRET_ACCESS_KEY 
 ```
 
-(Note) The home directory path (.ex. '~' for Linux) is different depending on the type of Operating System used. 
+(Note) The home directory path (.ex. '~' for Linux) is different depending on the type of Operating System used. Also, be aware that you need to create a subfolder named ".aws", and then create the concerned file inside. You can use the template "credentials" that comes with this git repository.
 
 ## Clone GitHub Repository 
 
