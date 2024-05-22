@@ -108,9 +108,9 @@ def list_all_keys():
             for obj in dict_objects:
                 lastModified = obj['LastModified'].strftime('%A, %B %d, %Y %I:%M %p')
                 if timestamp_flag == "true":
-                    print(f'{obj["Key"]}, "{lastModified}"')
+                    print(f'{obj["Key"]}, {obj["Size"]}, "{lastModified}"')
                 else:
-                    print(f'{obj["Key"]}')
+                    print(f'{obj["Key"]}, {obj["Size"]}')
 
                 # print(f"Size: {obj['Size']}")
                 total_size = total_size + obj['Size']                
