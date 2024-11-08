@@ -42,7 +42,7 @@ def list_all_keys():
     # Use the following code to connect using Wasabi profile from .aws/credentials file
 
     # session = boto3.Session(profile_name="wasabi")
-    session = boto3.Session(profile_name="wasabi")
+    session = boto3.Session(profile_name="centr")
     credentials = session.get_credentials()
     aws_access_key_id = credentials.access_key
     aws_secret_access_key = credentials.secret_key
