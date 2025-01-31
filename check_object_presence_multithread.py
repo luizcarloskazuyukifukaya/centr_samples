@@ -109,17 +109,6 @@ def read_csv_and_check_objects(file_path, check_target_bucket):
       
       If an error occurs during reading or processing,
       appropriate error messages are logged.
-      
-      Example output:
-      - Present (200), centr-backup-november2024, object_key_1, 200
-      - NOT present (404), centr-backup-november2024, object_key_2, 404
-      - # Total objects:, 10, Total found:, 8, Total missing:, 2
-      
-      If no errors occur during processing,
-      logs will reflect time taken for execution.
-      
-      Example output:
-      - # Time taken: 5.23 seconds
      """
     
     try:
@@ -150,19 +139,25 @@ def read_csv_and_check_objects(file_path, check_target_bucket):
 
             logging.info(f"# Total objects:, {total_obj_count}, Total found:, {found_obj_count}, Total missing:, {missing_object_count}")
 
-        except FileNotFoundError:
-            logging.error(f"# Error: The file {file_path} was not found.")
-            return
-        
-        except Exception as e:
-            logging.error(f"# An error occurred: {e}")
-            return
+    except FileNotFoundError:
+        logging.error(f"# Error: The file {file_path} was not found.")
+        return
+    
+    except Exception as e:
+        logging.error(f"# An error occurred: {e}")
+        return
 
 if __name__ == "__main__":
     args = parse_arguments()
     
     setup_logging(args.log)  # Set up logging with specified log file
     
-   initialize_s3_client(args.region)  # Initialize S3 client once
+    initialize_s3_client(args.region)  # Initialize S3 client once
     
-   start_time time.time()
+    start_time = time.time()
+    
+    read_csv_and_check_objects(args.csv, args.bucket)
+    
+    end_time = time.time()
+    
+    logging.info(f"# Time taken: {end_time - start_time:.2f} seconds")
