@@ -14,6 +14,9 @@ default_target_bucket = "centr-backup-november2024"
 default_target_CSV = "centr.csv"
 default_log_file = "s3_check.log"
 
+# Global S3 client variable
+s3_client = None
+
 def parse_arguments():
     """
     Parse command-line arguments.
@@ -53,15 +56,14 @@ def setup_logging(log_file):
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
-def check_object_exists(bucket_name, object_key, target_region):
+def initialize_s3_client(target_region):
     """
-    Check if an object exists in an S3 bucket using HTTP HEAD.
+    Initialize the S3 client and store it in a global variable.
     
-    :param bucket_name: Name of the S3 bucket
-    :param object_key: Key of the object to check
     :param target_region: AWS region for the S3 endpoint
-    :return: Tuple of object key and HTTP status code from the HEAD request
     """
+    global s3_client
+    
     session = boto3.Session(profile_name="centr")
     credentials = session.get_credentials()
     
@@ -75,6 +77,15 @@ def check_object_exists(bucket_name, object_key, target_region):
                               aws_access_key_id=aws_access_key_id,
                               aws_secret_access_key=aws_secret_access_key)
 
+def check_object_exists(bucket_name, object_key):
+    """
+    Check if an object exists in an S3 bucket using HTTP HEAD.
+    
+    :param bucket_name: Name of the S3 bucket
+    :param object_key: Key of the object to check
+    :return: Tuple of object key and HTTP status code from the HEAD request
+    """
+    
     try:
         response = s3_client.head_object(Bucket=bucket_name, Key=object_key)
         return (object_key, response['ResponseMetadata']['HTTPStatusCode'])
@@ -93,6 +104,7 @@ def read_csv_and_check_objects(file_path, check_target_bucket, target_region):
     CSV format result message, checked bucket, checked object key, HEAD HTTP Response code.
     Last line: total objects count, presented objects count, missing objects count.
     """
+    
     try:
         with open(file_path, mode='r') as csvfile:
             csv_reader = csv.reader(csvfile)
@@ -104,7 +116,7 @@ def read_csv_and_check_objects(file_path, check_target_bucket, target_region):
 
             # Use ThreadPoolExecutor for multithreading
             with ThreadPoolExecutor(max_workers=10) as executor:
-                future_to_object = {executor.submit(check_object_exists, check_target_bucket, row[1], target_region): row[1] 
+                future_to_object = {executor.submit(check_object_exists, check_target_bucket, row[1]): row[1] 
                                      for row in csv_reader if len(row) == 2}
                 
                 for future in as_completed(future_to_object):
@@ -133,10 +145,12 @@ if __name__ == "__main__":
     
     setup_logging(args.log)  # Set up logging with specified log file
     
+    initialize_s3_client(args.region)  # Initialize S3 client once
+    
     start_time = time.time()
     
     read_csv_and_check_objects(args.csv, args.bucket, args.region)
     
     end_time = time.time()
     
-    logging.info(f"#Time taken: {end_time - start_time:.2f} seconds")
+    logging.info(f"# Time taken: {end_time - start_time:.2f} seconds")
