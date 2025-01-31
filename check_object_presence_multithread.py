@@ -39,16 +39,16 @@ def setup_logging(log_file):
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    # Create file handler
+    # Create file handler for logging to a file
     file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(logging.INFO)
 
-    # Create console handler
+    # Create console handler for logging to the console
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
 
-    # Create formatter and add it to handlers
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    # Create formatter and add it to handlers (without timestamp)
+    formatter = logging.Formatter('%(levelname)s - %(message)s')
     file_handler.setFormatter(formatter)
     console_handler.setFormatter(formatter)
 
@@ -89,21 +89,38 @@ def check_object_exists(bucket_name, object_key):
     try:
         response = s3_client.head_object(Bucket=bucket_name, Key=object_key)
         return (object_key, response['ResponseMetadata']['HTTPStatusCode'])
+    
     except ClientError as e:
         return (object_key, e.response['ResponseMetadata']['HTTPStatusCode'])
 
-def read_csv_and_check_objects(file_path, check_target_bucket, target_region):
+def read_csv_and_check_objects(file_path, check_target_bucket):
     """
     Read a CSV file and check for the existence of objects in S3.
     
     :param file_path: Path to the CSV file
     :param check_target_bucket: The bucket to check the object presence with HTTP HEAD
-    :param target_region: AWS region for the S3 endpoint
 
     :output:
-    CSV format result message, checked bucket, checked object key, HEAD HTTP Response code.
-    Last line: total objects count, presented objects count, missing objects count.
-    """
+      Log messages indicating presence or absence of objects,
+      along with counts of total, found, and missing objects.
+      
+      Last line logged includes total objects count,
+      presented objects count, missing objects count.
+      
+      If an error occurs during reading or processing,
+      appropriate error messages are logged.
+      
+      Example output:
+      - Present (200), centr-backup-november2024, object_key_1, 200
+      - NOT present (404), centr-backup-november2024, object_key_2, 404
+      - # Total objects:, 10, Total found:, 8, Total missing:, 2
+      
+      If no errors occur during processing,
+      logs will reflect time taken for execution.
+      
+      Example output:
+      - # Time taken: 5.23 seconds
+     """
     
     try:
         with open(file_path, mode='r') as csvfile:
@@ -133,24 +150,19 @@ def read_csv_and_check_objects(file_path, check_target_bucket, target_region):
 
             logging.info(f"# Total objects:, {total_obj_count}, Total found:, {found_obj_count}, Total missing:, {missing_object_count}")
 
-    except FileNotFoundError:
-        logging.error(f"# Error: The file {file_path} was not found.")
-        return
-    except Exception as e:
-        logging.error(f"# An error occurred: {e}")
-        return
+        except FileNotFoundError:
+            logging.error(f"# Error: The file {file_path} was not found.")
+            return
+        
+        except Exception as e:
+            logging.error(f"# An error occurred: {e}")
+            return
 
 if __name__ == "__main__":
     args = parse_arguments()
     
     setup_logging(args.log)  # Set up logging with specified log file
     
-    initialize_s3_client(args.region)  # Initialize S3 client once
+   initialize_s3_client(args.region)  # Initialize S3 client once
     
-    start_time = time.time()
-    
-    read_csv_and_check_objects(args.csv, args.bucket, args.region)
-    
-    end_time = time.time()
-    
-    logging.info(f"# Time taken: {end_time - start_time:.2f} seconds")
+   start_time time.time()
